@@ -1,45 +1,7 @@
 <html>
     <head>
+        <script src="uquery.js" type="text/javascript"></script>
         <script>
-        uQuery = (function() {
-            function $(selector) {
-                if(selector instanceof Function)
-                    return $(document).on('DOMContentLoaded', selector);
-
-                if(this == window)
-                    return new $(selector);
-
-                Array.call(this);
-                if(selector instanceof Node)
-                    this.push(selector)
-                else if(selector instanceof Array)
-                    this.push.apply(this, selector);
-                else
-                    this.push.apply(this, document.querySelectorAll(selector));
-            }
-
-            $.prototype = new Array;
-
-            Object.assign($.prototype, {
-                css: function(obj) {
-                    return this.each(function(c) { Object.assign(c.style, obj); });
-                },
-                on: function(evt, cb) {
-                    return this.each(function(c) {
-                        evt.split(' ').forEach(function(e) {
-                            c.addEventListener(e, cb, false);
-                        });
-                    });
-                },
-                show: function() { return this.css({'visibility': 'initial'}); },
-                hide: function() { return this.css({'visibility': 'hidden'}); },
-                each: function(func) { this.forEach(func); return this; },
-            })
-
-            return $;
-        })();
-
-        $ = uQuery;
         $(function() {
             console.info('ready');
 
@@ -50,6 +12,24 @@
             });
 
             $([$('#c2')[0]]).css({'background': 'blue'});
+
+            $("#test1").on('click', function() {
+                $('.container').text('<b>testgnuj</b>');
+            });
+            $("#test2").on('click', function() {
+                $('.container').html('<b>testgnuj</b>');
+            });
+            $("#test3").on('click', function() {
+                $.ajax({
+                    'url': 'test.json',
+                    'success': function(evt) {
+                        console.info(evt);
+                    },
+                    'error': function(evt) {
+                        console.error(evt);
+                    },
+                })
+            });
         });
         </script>
     </head>
@@ -63,5 +43,9 @@
         </div>
 
         <button onclick="$('.container').css({'background': 'red'});">JP2GMD</button>
+        <button id="test1">Test1</button>
+        <button id="test2">Test2</button>
+        <button id="test3">Test3</button>
+        <button id="test4">Test4</button>
     </body>
 </html>
