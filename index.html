@@ -3,31 +3,54 @@
         <script>
         uQuery = (function() {
             function $(selector) {
-                if(selector instanceof HTMLElement)
-                    Array.call(this, selector)
+                if(selector instanceof Function)
+                    return $(document).on('DOMContentLoaded', selector);
+
+                if(this == window)
+                    return new $(selector);
+
+                Array.call(this);
+                if(selector instanceof Node)
+                    this.push(selector)
+                else if(selector instanceof Array)
+                    this.push.apply(this, selector);
                 else
-                    this = Array.from(document.querySelectorAll(selector));
+                    this.push.apply(this, document.querySelectorAll(selector));
             }
 
-            $.prototype = Array.prototype;
+            $.prototype = new Array;
 
-            $.prototype.css = function(obj) {
-                for(var n in obj) {
-                    e.forEach(function(c) {
-                        console.info(c);
-                        c.style[n] = obj[n];
+            Object.assign($.prototype, {
+                css: function(obj) {
+                    return this.each(function(c) { Object.assign(c.style, obj); });
+                },
+                on: function(evt, cb) {
+                    return this.each(function(c) {
+                        evt.split(' ').forEach(function(e) {
+                            c.addEventListener(e, cb, false);
+                        });
                     });
-                }
-            }
+                },
+                show: function() { return this.css({'visibility': 'initial'}); },
+                hide: function() { return this.css({'visibility': 'hidden'}); },
+                each: function(func) { this.forEach(func); return this; },
+            })
 
-            $.prototype.show = function() { e.css({'visibility': 'initial'}); }
-            $.prototype.hide = function() { e.css({'visibility': 'hidden'}); }
-
-
-            return $
+            return $;
         })();
 
         $ = uQuery;
+        $(function() {
+            console.info('ready');
+
+            $('.container').on('click', function() {
+                console.info('clickety');
+            }).on('mousemove click', function() {
+                console.info('move');
+            });
+
+            $([$('#c2')[0]]).css({'background': 'blue'});
+        });
         </script>
     </head>
     <body>
