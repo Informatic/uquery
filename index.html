@@ -4,24 +4,25 @@
         uQuery = (function() {
             function $(selector) {
                 if(selector instanceof HTMLElement)
-                    var e = [selector];
+                    Array.call(this, selector)
                 else
-                    var e = Array.from(document.querySelectorAll(selector));
-
-                e.css = function(obj) {
-                    for(var n in obj) {
-                        e.forEach(function(c) {
-                            console.info(c);
-                            c.style[n] = obj[n];
-                        });
-                    }
-                }
-
-                e.show = function() { e.css({'visibility': 'initial'}); }
-                e.hide = function() { e.css({'visibility': 'hidden'}); }
-
-                return e;
+                    this = Array.from(document.querySelectorAll(selector));
             }
+
+            $.prototype = Array.prototype;
+
+            $.prototype.css = function(obj) {
+                for(var n in obj) {
+                    e.forEach(function(c) {
+                        console.info(c);
+                        c.style[n] = obj[n];
+                    });
+                }
+            }
+
+            $.prototype.show = function() { e.css({'visibility': 'initial'}); }
+            $.prototype.hide = function() { e.css({'visibility': 'hidden'}); }
+
 
             return $
         })();
