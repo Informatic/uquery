@@ -18,17 +18,23 @@
             });
             $("#test2").on('click', function() {
                 $('.container').html('<b>testgnuj</b>');
+                $('#c2').hide();
             });
             $("#test3").on('click', function() {
                 $.ajax({
                     'url': 'test.json',
-                    'success': function(evt) {
-                        console.info(evt);
+                    'json': true,
+                    'success': function(data) {
+                        console.info(data.responseJSON);
                     },
                     'error': function(evt) {
                         console.error(evt, evt.readyState);
                     },
                 })
+            });
+            $("#test4").on('click', function() {
+                $('.container').attr({'data-papież': 'tańczy'})
+                alert($('.container').attr('data-papież'));
             });
         });
         </script>
