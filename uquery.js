@@ -21,13 +21,19 @@ window.uQuery = (function() {
 
         css: function(obj) {
             if(typeof obj == 'string')
-                return this[0].style[obj]
+                return this[0]?this[0].style[obj]:undefined;
             return this.each(function(c) { Object.assign(c.style, obj); });
         },
         attr: function(obj) {
             if(typeof obj == 'string')
-                return this[0].getAttribute(obj)
-            return this.each(function(c) { for(var n in obj) c.setAttribute(n, obj[n]); });
+                return this[0]?this[0].getAttribute(obj):undefined;
+
+            return this.each(function(c) { for(var n in obj) {
+                if (obj[n] === null)
+                    c.removeAttribute(n);
+                else
+                    c.setAttribute(n, obj[n]);
+            }});
         },
         on: function(evt, cb) {
             return this.each(function(c) {
@@ -40,12 +46,16 @@ window.uQuery = (function() {
         hide: function() { return this.css({'display': 'none'}); },
 
         set: function(attr, value) {
+            if (value === undefined) {
+                return this[0]?this[0][attr]:undefined;
+            }
             return this.each(function(c) { c[attr] = value; });
         },
         text: function(d) { return this.set('textContent', d); },
         html: function(d) { return this.set('innerHTML', d); },
+        val: function(d) { return this.set('value', d); },
 
-        hasClass: function(c) { return this[0].classList.contains(c) },
+        hasClass: function(c) { return this[0]?this[0].classList.contains(c):undefined },
         appendClass: function(c) {
             return this.each(function(e) { e.classList.add(c); });
         },
@@ -63,6 +73,9 @@ window.uQuery = (function() {
         ajax: function(opts) {
             var req = new XMLHttpRequest();
             req.open(opts.method||'GET', opts.url, true);
+            for (var k in opts.headers||{}) {
+                req.setRequestHeader(k, opts.headers[k]);
+            }
             req.onreadystatechange = function(evt) {
                 if(req.readyState == 4) {
                     if(opts.json)
@@ -78,6 +91,17 @@ window.uQuery = (function() {
             req.send(opts.data||null);
             return this;
         },
+        formEncode: function(data) {
+            var urlEncodedData = "";
+            var urlEncodedDataPairs = [];
+            var name;
+
+            for(name in data) {
+                urlEncodedDataPairs.push(encodeURIComponent(name) + '=' + encodeURIComponent(data[name]));
+            }
+
+            return urlEncodedDataPairs.join('&').replace(/%20/g, '+');
+        }
     });
 
     return $;
